@@ -60,6 +60,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
     return;
   }
 
+  logger.info('event request', event);
   const body: RenderRequest = JSON.parse(event.body);
   if (!body.url) {
     return r.badRequest('invalid request', callback);
