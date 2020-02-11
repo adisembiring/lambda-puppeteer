@@ -17,7 +17,7 @@ interface PdfFetchResult {
 }
 
 async function fetchPdf(url: string): Promise<PdfFetchResult> {
-  let browser: Browser;
+  let browser: Browser | undefined;
   try {
     browser = await chromium.puppeteer.launch({
       args: chromium.args,
@@ -40,25 +40,39 @@ async function fetchPdf(url: string): Promise<PdfFetchResult> {
     await browser.close();
     return { pdfBuffer, title };
   } catch (e) {
+    if (browser) {
+      await browser.close();
+    }
     throw e;
   }
 }
 
-async function upload(pdfResult: PdfFetchResult): Promise<void> {
+async function upload(pdfResult: PdfFetchResult): Promise<string> {
   const bucket = config.application.pdfBucket;
   const key = Date.now() + '.pdf';
   await s3.upload(bucket, key, pdfResult.pdfBuffer);
+  return key;
 }
 
 export const handler: Handler = async function(event: APIGatewayEvent, context: Context, callback: Callback) {
-  const body: RenderRequest = { url: 'https://stackoverflow.com' };
+  if (!event.body) {
+    r.badRequest('invalid request', callback);
+    return;
+  }
+
+  const body: RenderRequest = JSON.parse(event.body);
   if (!body.url) {
     return r.badRequest('invalid request', callback);
   }
+
   try {
     const pdfResult = await fetchPdf(body.url);
-    await upload(pdfResult);
+    const s3Key = await upload(pdfResult);
+
+    const res = { status: 'OK', page_title: pdfResult.title, s3_key: s3Key };
+    r.ok(res, callback);
   } catch (e) {
     logger.error('failed to render pdf', e);
+    context.done(e);
   }
 };
