@@ -1,0 +1,34 @@
+service: adi-lambda-puppeteer
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: us-east-1
+  environment:
+    APPLICATION_NAME: lambda-puppeteer
+    RAW_FILE_BUCKET: adi-raw-file-bucket
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:PutObjectAcl
+      Resource: "arn:aws:s3:::${self:provider.environment.RAW_FILE_BUCKET}/*"
+
+functions:
+  post:
+    handler: dist/lambda/html2pdf.handler
+    events:
+      - http: POST html2pdf
+
+package:
+  exclude:
+    - .idea/**
+    - build/**
+    - src/**
+    - test/**
+    - artifacts/**
+    - combined.log
+    - error.log
+    - node_modules/puppeteer/.local-chromium/**
+
+
