@@ -28,9 +28,7 @@
     "chrome-aws-lambda": "^2.1.1",
     "compile": "0.0.2",
     "dotenv": "^8.0.0",
-    "npm": "^6.13.7",
     "puppeteer-core": "^2.1.1",
-    "run": "^1.4.0",
     "uuid": "^3.4.0",
     "winston": "^3.2.1"
   },
