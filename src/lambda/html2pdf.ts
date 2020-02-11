@@ -23,9 +23,18 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
     });
     const page = await browser.newPage();
     await page.goto(body.url || 'https://example.com');
-    const title = await page.title();
+    const pdf = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '2.54cm',
+        right: '2.54cm',
+        bottom: '2.54cm',
+        left: '2.54cm',
+      },
+    });
 
-    const resBody = { page_title: title, status: 'ok' };
+    const title = await page.title();
+    const resBody = { page_title: title, status: 'ok', pdf_size: pdf.length };
     logger.info('start completed', resBody);
     await browser.close();
     return r.ok(resBody, callback);
