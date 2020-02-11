@@ -23,8 +23,10 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
     const page = await browser.newPage();
     await page.goto(body.url || 'https://example.com');
     const title = await page.title();
-    logger.info('start completed', body);
-    return r.ok({ page_title: title, status: 'ok' }, callback);
+
+    const resBody = { page_title: title, status: 'ok' };
+    logger.info('start completed', resBody);
+    return r.ok(resBody, callback);
   } catch (e) {
     logger.error('start failed', e, body);
     return context.fail(e);
