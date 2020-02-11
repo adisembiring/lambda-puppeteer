@@ -9,14 +9,14 @@ provider:
   reservedConcurrency: 5
   environment:
     APPLICATION_NAME: lambda-puppeteer2
-    RAW_FILE_BUCKET: adi-raw-file-bucket
+    PDF_BUCKET: adi-sec-demo
 
   iamRoleStatements:
     - Effect: Allow
       Action:
         - s3:PutObject
         - s3:PutObjectAcl
-      Resource: "arn:aws:s3:::${self:provider.environment.RAW_FILE_BUCKET}/*"
+      Resource: "arn:aws:s3:::${self:provider.environment.PDF_BUCKET}/*"
 
 functions:
   post:

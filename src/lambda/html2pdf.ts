@@ -1,5 +1,8 @@
 import * as r from './shared/lambda-response';
 import * as chromium from 'chrome-aws-lambda';
+import * as s3 from '../lib/gateways/s3-gateway';
+import config from '../lib/infrastructure/config';
+
 import { APIGatewayEvent, Context, Callback, Handler } from 'aws-lambda';
 import { logger } from '../lib/infrastructure/logger';
 import { Browser } from 'puppeteer';
@@ -7,14 +10,15 @@ import { Browser } from 'puppeteer';
 interface RenderRequest {
   url: string;
 }
-export const handler: Handler = async function(event: APIGatewayEvent, context: Context, callback: Callback) {
-  const body: RenderRequest = { url: 'https://stackoverflow.com' };
-  if (!body.url) {
-    return r.badRequest('invalid request', callback);
-  }
+
+interface PdfFetchResult {
+  pdfBuffer: Buffer;
+  title: string;
+}
+
+async function fetchPdf(url: string): Promise<PdfFetchResult> {
   let browser: Browser;
   try {
-    logger.info('start rendering', body);
     browser = await chromium.puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
@@ -22,8 +26,8 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
       headless: chromium.headless,
     });
     const page = await browser.newPage();
-    await page.goto(body.url || 'https://example.com');
-    const pdf = await page.pdf({
+    await page.goto(url);
+    const pdfBuffer = await page.pdf({
       format: 'A4',
       margin: {
         top: '2.54cm',
@@ -32,14 +36,29 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
         left: '2.54cm',
       },
     });
-
     const title = await page.title();
-    const resBody = { page_title: title, status: 'ok', pdf_size: pdf.length };
-    logger.info('start completed', resBody);
     await browser.close();
-    return r.ok(resBody, callback);
+    return { pdfBuffer, title };
   } catch (e) {
-    logger.error('start failed', e, body);
-    return context.fail(e);
+    throw e;
+  }
+}
+
+async function upload(pdfResult: PdfFetchResult): Promise<void> {
+  const bucket = config.application.pdfBucket;
+  const key = Date.now() + '.pdf';
+  await s3.upload(bucket, key, pdfResult.pdfBuffer);
+}
+
+export const handler: Handler = async function(event: APIGatewayEvent, context: Context, callback: Callback) {
+  const body: RenderRequest = { url: 'https://stackoverflow.com' };
+  if (!body.url) {
+    return r.badRequest('invalid request', callback);
+  }
+  try {
+    const pdfResult = await fetchPdf(body.url);
+    await upload(pdfResult);
+  } catch (e) {
+    logger.error('failed to render pdf', e);
   }
 };
