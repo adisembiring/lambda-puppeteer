@@ -6,9 +6,9 @@ interface RenderRequest {
   url: string;
 }
 export const handler: Handler = async function(event: APIGatewayEvent, context: Context, callback: Callback) {
-  const body: RenderRequest   = JSON.parse(event.body || "{}");
+  const body: RenderRequest = { url: 'https://stackoverflow.com' };
   if (!body.url) {
-    return r.badRequest("invalid request", callback);
+    return r.badRequest('invalid request', callback);
   }
   let browser = null;
   try {
