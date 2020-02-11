@@ -5,6 +5,8 @@ provider:
   region: us-east-1
   timeout: 900
   memorySize: 1024
+  provisionedConcurrency: 3
+  reservedConcurrency: 5
   environment:
     APPLICATION_NAME: lambda-puppeteer
     RAW_FILE_BUCKET: adi-raw-file-bucket
