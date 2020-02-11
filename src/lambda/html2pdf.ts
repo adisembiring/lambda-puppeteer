@@ -2,6 +2,7 @@ import * as r from './shared/lambda-response';
 import * as chromium from 'chrome-aws-lambda';
 import { APIGatewayEvent, Context, Callback, Handler } from 'aws-lambda';
 import { logger } from '../lib/infrastructure/logger';
+import { Browser } from 'puppeteer';
 
 interface RenderRequest {
   url: string;
@@ -11,7 +12,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
   if (!body.url) {
     return r.badRequest('invalid request', callback);
   }
-  let browser = null;
+  let browser: Browser;
   try {
     logger.info('start rendering', body);
     browser = await chromium.puppeteer.launch({
@@ -26,6 +27,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
 
     const resBody = { page_title: title, status: 'ok' };
     logger.info('start completed', resBody);
+    await browser.close();
     return r.ok(resBody, callback);
   } catch (e) {
     logger.error('start failed', e, body);
