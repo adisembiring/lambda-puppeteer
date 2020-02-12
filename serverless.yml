@@ -23,7 +23,10 @@ functions:
     handler: dist/lambda/html2pdf.handler
     events:
       - http: POST html2pdf
-
+  get:
+    handler: dist/lambda/pdf-downloader.handler
+    events:
+      - http: GET pdfdownloader
 package:
   exclude:
     - .idea/**

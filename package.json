@@ -2,7 +2,6 @@
   "name": "lambda-puppeteer",
   "version": "1.0.0",
   "description": "html to pdf converter in aws lambda",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/adisembiring/node-aws-sample.git"
@@ -17,16 +16,15 @@
     "compile-watch": "tsc -w"
   },
   "keywords": [
-    "example",
     "aws",
-    "integration"
+    "lambda",
+    "puppeteer"
   ],
   "author": "sembiring.adi@gmail.com",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.449.0",
     "chrome-aws-lambda": "^2.1.1",
-    "compile": "0.0.2",
     "dotenv": "^8.0.0",
     "puppeteer-core": "^2.1.1",
     "uuid": "^3.4.0",
