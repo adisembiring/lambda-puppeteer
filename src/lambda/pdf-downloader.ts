@@ -13,6 +13,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
       statusCode: 200,
       headers: {
         'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename=invoice01.pdf',
       },
       isBase64Encoded: true,
       body: pdfResult.pdfBuffer.toString('base64'),
