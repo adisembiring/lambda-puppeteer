@@ -5,20 +5,10 @@ import config from '../lib/infrastructure/config';
 import { APIGatewayEvent, Context, Callback, Handler } from 'aws-lambda';
 import { logger } from '../lib/infrastructure/logger';
 import { fetchPdf, PdfFetchResult } from './converter';
+import { parseRequestBody } from './shared/request-body-parser';
 
 interface RenderRequest {
   url: string;
-}
-
-function getRequest(event: APIGatewayEvent): RenderRequest | null {
-  if (!event.body) {
-    return null;
-  }
-  const body: RenderRequest = JSON.parse(event.body);
-  if (!body.url) {
-    return null;
-  }
-  return body;
 }
 
 async function upload(pdfResult: PdfFetchResult): Promise<string> {
@@ -30,7 +20,7 @@ async function upload(pdfResult: PdfFetchResult): Promise<string> {
 
 export const handler: Handler = async function(event: APIGatewayEvent, context: Context, callback: Callback) {
   logger.info('event request', event);
-  const body = getRequest(event);
+  const body = parseRequestBody<RenderRequest>(event);
   if (!body) {
     return r.badRequest('invalid request', callback);
   }
