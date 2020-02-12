@@ -1,4 +1,12 @@
 service: adi-lambda-puppeteer2
+
+custom:
+  envName: '${self:provider.stage}'
+  apigwBinary:
+    types:
+      - '*/*'
+
+
 provider:
   name: aws
   runtime: nodejs10.x
@@ -10,16 +18,6 @@ provider:
   environment:
     APPLICATION_NAME: lambda-puppeteer2
     PDF_BUCKET: adi-sec-demo
-  apiGateway:
-    binaryMediaTypes:
-      - '*/*'
-
-custom:
-  serverless-offline:
-    port: 8000
-  apigwBinary:
-    types:
-      - 'application/pdf'
 
   iamRoleStatements:
     - Effect: Allow
@@ -41,13 +39,9 @@ functions:
     handler: dist/lambda/pdf-downloader.handler
     events:
       - http:
-          integration: lambda
           method: GET
           path: pdfdownloader
           contentHandling: CONVERT_TO_BINARY
-          response:
-            headers:
-              Content-Type: "'application/pdf'"
 
 package:
   exclude:
