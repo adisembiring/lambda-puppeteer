@@ -18,6 +18,10 @@ provider:
         - s3:PutObjectAcl
       Resource: "arn:aws:s3:::${self:provider.environment.PDF_BUCKET}/*"
 
+plugins:
+  - serverless-apigwy-binary
+
+
 functions:
   post:
     handler: dist/lambda/html2pdf.handler
@@ -26,7 +30,11 @@ functions:
   get:
     handler: dist/lambda/pdf-downloader.handler
     events:
-      - http: GET pdfdownloader
+      - http:
+          integration: lambda
+          method: GET
+          path: pdfdownloader
+          contentHandling: CONVERT_TO_BINARY
 package:
   exclude:
     - .idea/**
