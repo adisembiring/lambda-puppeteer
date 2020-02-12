@@ -11,11 +11,12 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
     const pdfResult = await fetchPdf(body.url);
     const response = {
       statusCode: 200,
+      isBase64Encoded: true,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=invoice01.pdf',
       },
-      body: pdfResult,
+      body: pdfResult.pdfBuffer.toString('base64'),
     };
     callback(null, response);
   } catch (e) {
