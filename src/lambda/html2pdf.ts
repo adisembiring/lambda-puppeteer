@@ -24,6 +24,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
   if (!body) {
     return r.badRequest('invalid request', callback);
   }
+  logger.info('request body', body);
   try {
     const pdfResult = await fetchPdf(body.url);
     const s3Key = await upload(pdfResult);
