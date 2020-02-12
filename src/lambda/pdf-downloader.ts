@@ -12,7 +12,7 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
     const response = {
       statusCode: 200,
       headers: {
-        'Content-Type': 'application-pdf',
+        'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=invoice01.pdf',
       },
       body: pdfResult,
