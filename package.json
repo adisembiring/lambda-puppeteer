@@ -27,6 +27,7 @@
     "chrome-aws-lambda": "^2.1.1",
     "dotenv": "^8.0.0",
     "puppeteer-core": "^2.1.1",
+    "serverless-apigw-binary": "^0.4.4",
     "serverless-apigwy-binary": "^1.0.0",
     "uuid": "^3.4.0",
     "winston": "^3.2.1"
