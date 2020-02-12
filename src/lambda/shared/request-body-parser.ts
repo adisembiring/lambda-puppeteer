@@ -1,6 +1,6 @@
 import { APIGatewayEvent } from 'aws-lambda';
 
-function isJson(str: any) {
+function isJsonString(str: any) {
   try {
     JSON.parse(str);
   } catch (e) {
@@ -11,11 +11,11 @@ function isJson(str: any) {
 
 export function parseRequestBody<T>(event: APIGatewayEvent): T | null {
   const body = event.body;
-  if (isJson(body)) {
-    return body as any;
-  }
   try {
-    return JSON.parse(body || '');
+    if (isJsonString(body)) {
+      return JSON.parse(body || '');
+    }
+    return body || ({} as any);
   } catch (e) {
     return null;
   }
