@@ -15,7 +15,8 @@ export const handler: Handler = async function(event: APIGatewayEvent, context: 
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=invoice01.pdf',
       },
-      body: pdfResult.pdfBuffer.toString('utf-8'),
+      isBase64Encoded: true,
+      body: pdfResult.pdfBuffer.toString('base64'),
     };
     callback(null, response);
   } catch (e) {
