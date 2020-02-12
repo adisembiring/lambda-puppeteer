@@ -10,6 +10,16 @@ provider:
   environment:
     APPLICATION_NAME: lambda-puppeteer2
     PDF_BUCKET: adi-sec-demo
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
+
+custom:
+  serverless-offline:
+    port: 8000
+  apigwBinary:
+    types:
+      - 'application/pdf'
 
   iamRoleStatements:
     - Effect: Allow
@@ -19,8 +29,8 @@ provider:
       Resource: "arn:aws:s3:::${self:provider.environment.PDF_BUCKET}/*"
 
 plugins:
+  - serverless-apigw-binary
   - serverless-apigwy-binary
-
 
 functions:
   post:
