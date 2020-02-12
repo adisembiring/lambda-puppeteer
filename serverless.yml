@@ -35,6 +35,10 @@ functions:
           method: GET
           path: pdfdownloader
           contentHandling: CONVERT_TO_BINARY
+          response:
+            headers:
+              Content-Type: "'application/pdf'"
+
 package:
   exclude:
     - .idea/**
